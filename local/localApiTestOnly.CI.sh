@@ -11,9 +11,10 @@ while [ `docker logs local-mysql-1 2>&1 > /dev/null | grep "socket: '/var/run/my
 do
   count=$((++count))
   if [ $count -gt 30 ] ; then
+    echo "Maybe failed to launch MySQL"
     exit 1
   fi
-
+  echo "Waiting for MySQL to be ready... ($count seconds)"
   sleep 1
 done
 
