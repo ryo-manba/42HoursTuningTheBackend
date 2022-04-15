@@ -1,7 +1,6 @@
-const fs = require('fs').promises;
 const { v4: uuidv4 } = require('uuid');
 
-const jimp = require('jimp');
+const sharp = require('sharp');
 
 const { getLinkedUser, mylog, pool } = require("../mysql");
 
@@ -29,26 +28,29 @@ const postFiles = async (req, res) => {
 
   const binary = Buffer.from(base64Data, 'base64');
 
-  await fs.writeFile(`${filePath}${newId}_${name}`, binary);
+  const tmpFilePath = `${filePath}${newId}_${name}.webp`;
 
-  const image = await jimp.read(binary);
-  mylog(image.bitmap.width);
-  mylog(image.bitmap.height);
+  const img_webp = await sharp(binary).webp();
+  await img_webp.toFile(tmpFilePath);
 
-  const size = Math.min(image.bitmap.width, image.bitmap.height, THUBM_IMG_SIZE);
-  await image.cover(size, size);
+  const meta = await img_webp.metadata();
+  mylog(meta.width);
+  mylog(meta.height);
 
-  await image.writeAsync(`${filePath}${newThumbId}_thumb_${name}`);
+  const size = Math.min(meta.width, meta.height, THUBM_IMG_SIZE);
+
+  const tmpThumbFilePath = `${filePath}${newThumbId}_thumb_${name}`;
+  await img_webp.resize(size, size).toFile(tmpThumbFilePath);
 
   await pool.query(
     `insert into file (file_id, path, name)
         values (?, ?, ?)`,
-    [`${newId}`, `${filePath}${newId}_${name}`, `${name}`],
+    [`${newId}`, tmpFilePath, `${name}`],
   );
   await pool.query(
     `insert into file (file_id, path, name)
         values (?, ?, ?)`,
-    [`${newThumbId}`, `${filePath}${newThumbId}_thumb_${name}`, `thumb_${name}`],
+    [`${newThumbId}`, tmpThumbFilePath, `thumb_${name}`],
   );
 
   res.send({ fileId: newId, thumbFileId: newThumbId });
