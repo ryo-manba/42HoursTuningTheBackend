@@ -6,4 +6,4 @@
 # フォールバックモードでは、一部の項目はテストされません。
 # ===========================
 
-(cd ../scoring/tool && node ./nodeTool/check.js "fallback") || echo "処理に失敗しました。"
+(cd ../scoring/tool && node ./nodeTool/check-local.js "fallback") || (echo "処理に失敗しました。" && exit 1)
