@@ -13,6 +13,10 @@ npm ci
 
 cd $SCRIPT_DIR
 
-bash localApiTestOnly.CI.sh
+bash mysql_waiter.sh
+
+if [ $?=0 ] ; then
+  bash localApiTestOnly.sh
+fi
 
 docker-compose -f docker-compose-local.yaml down

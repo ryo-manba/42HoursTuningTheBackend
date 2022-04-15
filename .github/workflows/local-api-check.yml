@@ -27,9 +27,13 @@ jobs:
         working-directory: 
         run: (cd ./scoring/tool/nodeTool && npm ci)
 
+      - name: Wait for MySQL will ready
+        working-directory: ./local
+        run: bash mysql_waiter.sh
+
       - name: Do Tests
         working-directory: ./local
-        run: bash localApiTestOnly.CI.sh
+        run: bash localApiTestOnly.sh
 
       - if: always()
         name: Post docker-compose (shutdown)

@@ -1,10 +1,4 @@
-#!/bin/bash
-
-# ===========================
-# ローカル開発環境用APIテストスクリプト
-# APIテストをフォールバックモードで実施します。
-# フォールバックモードでは、一部の項目はテストされません。
-# ===========================
+#!/bin/sh
 
 count=0
 container_name=`docker ps --format "{{.Names}}" --filter "name=mysql"`
@@ -20,5 +14,3 @@ do
   echo "Waiting for MySQL to be ready... ($count seconds)"
   sleep 1
 done
-
-(cd ../scoring/tool && node ./nodeTool/check-local.js "fallback") || (echo "処理に失敗しました。" && exit 1)
