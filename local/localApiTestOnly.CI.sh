@@ -10,7 +10,7 @@ count=0
 while [ `docker logs local-mysql-1 2> /dev/null | grep "MySQL init process done. Ready for start up." | wc -l` = 0 ]
 do
   count=$((++count))
-  if [ COUNTER >= 30 ] ; then
+  if [ $count -gt 30 ] ; then
     exit 1
   fi
 
