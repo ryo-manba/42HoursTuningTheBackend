@@ -19,15 +19,17 @@ jobs:
         working-directory: ./local
         run: bash cpMysqlFile.sh
 
+      - name: run docker-compose
+        working-directory: ./local
+        run: docker-compose -f docker-compose-local.yaml up -d
+      
       - name: setup dependencies
         working-directory: ./scoring/tool/nodeTool
         run: npm ci
 
       - name: Do Tests
         working-directory: ./local
-        run: |
-          docker-compose -f docker-compose-local.yaml up -d
-          bash localApiTestOnly.sh
+        run: bash localApiTestOnly.sh
 
       - if: always()
         name: Post docker-compose (shutdown)
