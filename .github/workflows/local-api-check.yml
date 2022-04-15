@@ -26,3 +26,8 @@ jobs:
       - name: Do Tests
         working-directory: ./local
         run: bash localApiTestOnly.sh
+
+      - if: always()
+        name: Post docker-compose (shutdown)
+        working-directory: ./local
+        run: docker-compose -f docker-compose-local.yaml down
