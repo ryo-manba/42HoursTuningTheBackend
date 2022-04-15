@@ -1,0 +1,28 @@
+name: Local Check (API Only)
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Copy Settings and V*.sql
+        working-directory: ./local
+        run: bash cpMysqlFile.sh
+
+      - name: run docker-compose
+        working-directory: ./local
+        run: docker-compose -f docker-compose-local.yaml up
+      
+      - name: setup dependencies
+        working-directory: ./scoring/tool/nodeTool
+        run: npm ci
+
+      - name: Copy Settings and V*.sql
+        working-directory: ./local
+        run: bash localApiTestOnly.sh
