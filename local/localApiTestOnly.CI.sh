@@ -12,6 +12,8 @@ do
   count=$((++count))
   if [ $count -gt 300 ] ; then
     echo "!!! Maybe failed to launch MySQL"
+    echo "(docker logs)"
+    docker logs local-mysql-1
     exit 1
   fi
   echo "Waiting for MySQL to be ready... ($count seconds)"
