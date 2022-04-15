@@ -29,7 +29,7 @@ jobs:
 
       - name: Do Tests
         working-directory: ./local
-        run: bash localApiTestOnly.sh
+        run: bash localApiTestOnly.CI.sh
 
       - if: always()
         name: Post docker-compose (shutdown)
