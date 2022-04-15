@@ -1,4 +1,6 @@
 const db = require("../mysql");
+const fs = require('fs');
+
 
 // GET records/{recordId}/files/{itemId}
 // 添付ファイルのダウンロード

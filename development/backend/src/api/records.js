@@ -1,4 +1,6 @@
 const db = require("../mysql");
+const { v4: uuidv4 } = require('uuid');
+
 
 // POST /records
 // 申請情報登録
