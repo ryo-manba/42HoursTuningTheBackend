@@ -23,6 +23,6 @@ jobs:
         working-directory: ./scoring/tool/nodeTool
         run: npm ci
 
-      - name: Copy Settings and V*.sql
+      - name: Do Tests
         working-directory: ./local
         run: bash localApiTestOnly.sh
