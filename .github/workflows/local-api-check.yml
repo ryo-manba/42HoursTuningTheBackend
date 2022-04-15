@@ -10,7 +10,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+          cache: 'npm'
+          cache-dependency-path: scoring/tool/nodeTool/package-lock.json
       - name: Copy Settings and V*.sql
         working-directory: ./local
         run: bash cpMysqlFile.sh
