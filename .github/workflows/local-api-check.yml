@@ -1,0 +1,41 @@
+name: Local Check (API Only)
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+          cache: 'npm'
+          cache-dependency-path: scoring/tool/nodeTool/package-lock.json
+      - name: Copy Settings and V*.sql
+        working-directory: ./local
+        run: bash cpMysqlFile.sh
+
+      - name: run docker-compose
+        working-directory: ./local
+        run: docker-compose -f docker-compose-local.yaml up -d
+      
+      - name: setup dependencies
+        working-directory: 
+        run: (cd ./scoring/tool/nodeTool && npm ci)
+
+      - name: Wait for MySQL will ready
+        working-directory: ./local
+        run: bash mysql_waiter.sh
+
+      - name: Do Tests
+        working-directory: ./local
+        run: bash localApiTestOnly.sh
+
+      - if: always()
+        name: Post docker-compose (shutdown)
+        working-directory: ./local
+        run: docker-compose -f docker-compose-local.yaml down

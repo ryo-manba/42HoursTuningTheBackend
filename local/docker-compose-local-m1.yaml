@@ -1,0 +1,29 @@
+version: "3.7"
+services:
+    nginx:
+      build:
+        context: ./localNginx #ローカル開発用です。HTTPSポートは公開しません 
+        dockerfile: Dockerfile
+      ports:
+          - target: 80
+            published: 8080
+            protocol: tcp
+    backend:
+      init: true
+      build:
+        context: ../development/backend
+        dockerfile: Dockerfile
+    frontend:
+      build:
+        context: ./dummyFrontend #dummyFrontendはダミーのhtmlのみ返却します。
+        dockerfile: Dockerfile
+    mysql:
+      platform: linux/x86_64
+      build:
+        context: ./localMysql
+        dockerfile: Dockerfile
+      environment:
+        MYSQL_ALLOW_EMPTY_PASSWORD: 1
+        MYSQL_DATABASE: "app"
+        MYSQL_USER: "backend"
+        MYSQL_PASSWORD : "backend"
