@@ -3,7 +3,6 @@ const app = express();
 
 app.use(express.json({limit: '10mb'}))
 
-const api = require("./api");
 const api_categories = require("./api/categories");
 const api_files = require("./api/files");
 const api_record_views = require("./api/record-views");
