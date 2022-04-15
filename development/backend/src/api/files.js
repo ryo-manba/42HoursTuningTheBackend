@@ -7,6 +7,8 @@ const { getLinkedUser, mylog, pool } = require("../mysql");
 
 const filePath = 'file/';
 
+const THUBM_IMG_SIZE = 60;
+
 // POST files/
 // ファイルのアップロード
 const postFiles = async (req, res) => {
@@ -33,7 +35,7 @@ const postFiles = async (req, res) => {
   mylog(image.bitmap.width);
   mylog(image.bitmap.height);
 
-  const size = image.bitmap.width < image.bitmap.height ? image.bitmap.width : image.bitmap.height;
+  const size = Math.min(image.bitmap.width, image.bitmap.height, THUBM_IMG_SIZE);
   await image.cover(size, size);
 
   await image.writeAsync(`${filePath}${newThumbId}_thumb_${name}`);
