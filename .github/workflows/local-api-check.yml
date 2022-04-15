@@ -23,6 +23,7 @@ jobs:
         working-directory: ./local
         run: |
           docker-compose -f docker-compose-local.yaml up -d
+          curl http://localhost:8080
           bash localApiTestOnly.sh
 
       - if: always()
