@@ -43,4 +43,5 @@ const filePath = 'file/';
 module.exports = {
   pool,
   getLinkedUser,
+  mylog,
 };
