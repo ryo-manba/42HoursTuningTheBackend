@@ -38,8 +38,6 @@ const getLinkedUser = async (headers) => {
   return { user_id: rows[0].linked_user_id };
 };
 
-const filePath = 'file/';
-
 module.exports = {
   pool,
   getLinkedUser,

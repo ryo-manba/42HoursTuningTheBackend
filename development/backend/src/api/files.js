@@ -5,6 +5,8 @@ const jimp = require('jimp');
 
 const db = require("../mysql");
 
+const filePath = 'file/';
+
 // POST files/
 // ファイルのアップロード
 const postFiles = async (req, res) => {
