@@ -1,4 +1,4 @@
-const fs = require('fs');
+const fs = require('fs').promises;
 const { v4: uuidv4 } = require('uuid');
 
 const jimp = require('jimp');
@@ -29,7 +29,7 @@ const postFiles = async (req, res) => {
 
   const binary = Buffer.from(base64Data, 'base64');
 
-  fs.writeFileSync(`${filePath}${newId}_${name}`, binary);
+  await fs.writeFile(`${filePath}${newId}_${name}`, binary);
 
   const image = await jimp.read(binary);
   mylog(image.bitmap.width);
