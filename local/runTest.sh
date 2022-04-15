@@ -6,6 +6,7 @@ cd $SCRIPT_DIR
 
 bash cpMysqlFile.sh
 
+docker-compose -f docker-compose-local-m1.yaml build
 docker-compose -f docker-compose-local-m1.yaml up -d
 
 cd ../scoring/tool/nodeTool
