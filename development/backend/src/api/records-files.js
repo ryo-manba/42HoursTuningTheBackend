@@ -1,4 +1,4 @@
-const fs = require('fs');
+const fs = require('fs').promises;
 
 const { getLinkedUser, mylog, pool } = require("../mysql");
 
@@ -37,7 +37,7 @@ const getRecordItemFile = async (req, res) => {
 
   const fileInfo = rows[0];
 
-  const data = fs.readFileSync(fileInfo.path);
+  const data = await fs.readFile(fileInfo.path);
   const base64 = data.toString('base64');
   mylog(base64);
 
@@ -79,7 +79,7 @@ const getRecordItemFileThumbnail = async (req, res) => {
 
   const fileInfo = rows[0];
 
-  const data = fs.readFileSync(fileInfo.path);
+  const data = await fs.readFile(fileInfo.path);
   const base64 = data.toString('base64');
   mylog(base64);
 

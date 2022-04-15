@@ -1,4 +1,4 @@
-const fs = require('fs');
+const fs = require('fs').promises;
 const { v4: uuidv4 } = require('uuid');
 
 const jimp = require('jimp');
@@ -6,6 +6,8 @@ const jimp = require('jimp');
 const { getLinkedUser, mylog, pool } = require("../mysql");
 
 const filePath = 'file/';
+
+const THUBM_IMG_SIZE = 60;
 
 // POST files/
 // ファイルのアップロード
@@ -27,13 +29,13 @@ const postFiles = async (req, res) => {
 
   const binary = Buffer.from(base64Data, 'base64');
 
-  fs.writeFileSync(`${filePath}${newId}_${name}`, binary);
+  await fs.writeFile(`${filePath}${newId}_${name}`, binary);
 
-  const image = await jimp.read(fs.readFileSync(`${filePath}${newId}_${name}`));
+  const image = await jimp.read(binary);
   mylog(image.bitmap.width);
   mylog(image.bitmap.height);
 
-  const size = image.bitmap.width < image.bitmap.height ? image.bitmap.width : image.bitmap.height;
+  const size = Math.min(image.bitmap.width, image.bitmap.height, THUBM_IMG_SIZE);
   await image.cover(size, size);
 
   await image.writeAsync(`${filePath}${newThumbId}_thumb_${name}`);
