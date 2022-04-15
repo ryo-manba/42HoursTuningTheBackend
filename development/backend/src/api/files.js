@@ -3,14 +3,14 @@ const { v4: uuidv4 } = require('uuid');
 
 const jimp = require('jimp');
 
-const db = require("../mysql");
+const { getLinkedUser, mylog, pool } = require("../mysql");
 
 const filePath = 'file/';
 
 // POST files/
 // ファイルのアップロード
 const postFiles = async (req, res) => {
-  let user = await db.getLinkedUser(req.headers);
+  let user = await getLinkedUser(req.headers);
 
   if (!user) {
     res.status(401).send();
@@ -38,12 +38,12 @@ const postFiles = async (req, res) => {
 
   await image.writeAsync(`${filePath}${newThumbId}_thumb_${name}`);
 
-  await db.pool.query(
+  await pool.query(
     `insert into file (file_id, path, name)
         values (?, ?, ?)`,
     [`${newId}`, `${filePath}${newId}_${name}`, `${name}`],
   );
-  await db.pool.query(
+  await pool.query(
     `insert into file (file_id, path, name)
         values (?, ?, ?)`,
     [`${newThumbId}`, `${filePath}${newThumbId}_thumb_${name}`, `thumb_${name}`],

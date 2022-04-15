@@ -1,11 +1,11 @@
-const db = require("../mysql");
 const fs = require('fs');
 
+const { getLinkedUser, mylog, pool } = require("../mysql");
 
 // GET records/{recordId}/files/{itemId}
 // 添付ファイルのダウンロード
 const getRecordItemFile = async (req, res) => {
-  let user = await db.getLinkedUser(req.headers);
+  let user = await getLinkedUser(req.headers);
 
   if (!user) {
     res.status(401).send();
@@ -17,7 +17,7 @@ const getRecordItemFile = async (req, res) => {
   const itemId = Number(req.params.itemId);
   mylog(itemId);
 
-  const [rows] = await db.pool.query(
+  const [rows] = await pool.query(
     `select f.name, f.path from record_item_file r
     inner join file f
     on
@@ -47,7 +47,7 @@ const getRecordItemFile = async (req, res) => {
 // GET records/{recordId}/files/{itemId}/thumbnail
 // 添付ファイルのサムネイルダウンロード
 const getRecordItemFileThumbnail = async (req, res) => {
-  let user = await db.getLinkedUser(req.headers);
+  let user = await getLinkedUser(req.headers);
 
   if (!user) {
     res.status(401).send();
@@ -59,7 +59,7 @@ const getRecordItemFileThumbnail = async (req, res) => {
   const itemId = Number(req.params.itemId);
   mylog(itemId);
 
-  const [rows] = await db.pool.query(
+  const [rows] = await pool.query(
     `select f.name, f.path from record_item_file r
     inner join file f
     on

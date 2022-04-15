@@ -1,11 +1,11 @@
-const db = require("../mysql");
 const { v4: uuidv4 } = require('uuid');
 
+const { getLinkedUser, mylog, pool } = require("../mysql");
 
 // POST /records
 // 申請情報登録
 const postRecords = async (req, res) => {
-  let user = await db.getLinkedUser(req.headers);
+  let user = await getLinkedUser(req.headers);
 
   if (!user) {
     res.status(401).send();
@@ -17,7 +17,7 @@ const postRecords = async (req, res) => {
   const body = req.body;
   mylog(body);
 
-  let [rows] = await db.pool.query(
+  let [rows] = await pool.query(
     `select * from group_member where user_id = ?
     AND is_primary = true`,
     [user.user_id],
@@ -35,7 +35,7 @@ const postRecords = async (req, res) => {
 
   const newId = uuidv4();
 
-  await db.pool.query(
+  await pool.query(
     `insert into record
     (record_id, status, title, detail, category_id, application_group, created_by, created_at, updated_at)
     values (?, "open", ?, ?, ?, ?, ?, now(), now())`,
@@ -50,7 +50,7 @@ const postRecords = async (req, res) => {
   );
 
   for (const e of body.fileIdList) {
-    await db.pool.query(
+    await pool.query(
       `insert into record_item_file
         (linked_record_id, linked_file_id, linked_thumbnail_file_id, created_at)
         values (?, ?, ?, now())`,
@@ -64,7 +64,7 @@ const postRecords = async (req, res) => {
 // GET /records/{recordId}
 // 文書詳細取得
 const getRecord = async (req, res) => {
-  let user = await db.getLinkedUser(req.headers);
+  let user = await getLinkedUser(req.headers);
 
   if (!user) {
     res.status(401).send();
@@ -75,7 +75,7 @@ const getRecord = async (req, res) => {
 
   const recordQs = `select * from record where record_id = ?`;
 
-  const [recordResult] = await db.pool.query(recordQs, [`${recordId}`]);
+  const [recordResult] = await pool.query(recordQs, [`${recordId}`]);
   mylog(recordResult);
 
   if (recordResult.length !== 1) {
@@ -106,27 +106,27 @@ const getRecord = async (req, res) => {
 
   const line = recordResult[0];
 
-  const [primaryResult] = await db.pool.query(searchPrimaryGroupQs, [line.created_by]);
+  const [primaryResult] = await pool.query(searchPrimaryGroupQs, [line.created_by]);
   if (primaryResult.length === 1) {
     const primaryGroupId = primaryResult[0].group_id;
 
-    const [groupResult] = await db.pool.query(searchGroupQs, [primaryGroupId]);
+    const [groupResult] = await pool.query(searchGroupQs, [primaryGroupId]);
     if (groupResult.length === 1) {
       recordInfo.createdByPrimaryGroupName = groupResult[0].name;
     }
   }
 
-  const [appGroupResult] = await db.pool.query(searchGroupQs, [line.application_group]);
+  const [appGroupResult] = await pool.query(searchGroupQs, [line.application_group]);
   if (appGroupResult.length === 1) {
     recordInfo.applicationGroupName = appGroupResult[0].name;
   }
 
-  const [userResult] = await db.pool.query(searchUserQs, [line.created_by]);
+  const [userResult] = await pool.query(searchUserQs, [line.created_by]);
   if (userResult.length === 1) {
     recordInfo.createdByName = userResult[0].name;
   }
 
-  const [categoryResult] = await db.pool.query(searchCategoryQs, [line.category_id]);
+  const [categoryResult] = await pool.query(searchCategoryQs, [line.category_id]);
   if (categoryResult.length === 1) {
     recordInfo.categoryName = categoryResult[0].name;
   }
@@ -141,14 +141,14 @@ const getRecord = async (req, res) => {
   recordInfo.createdAt = line.created_at;
 
   const searchItemQs = `select * from record_item_file where linked_record_id = ? order by item_id asc`;
-  const [itemResult] = await db.pool.query(searchItemQs, [line.record_id]);
+  const [itemResult] = await pool.query(searchItemQs, [line.record_id]);
   mylog('itemResult');
   mylog(itemResult);
 
   const searchFileQs = `select * from file where file_id = ?`;
   for (let i = 0; i < itemResult.length; i++) {
     const item = itemResult[i];
-    const [fileResult] = await db.pool.query(searchFileQs, [item.linked_file_id]);
+    const [fileResult] = await pool.query(searchFileQs, [item.linked_file_id]);
 
     let fileName = '';
     if (fileResult.length !== 0) {
@@ -158,7 +158,7 @@ const getRecord = async (req, res) => {
     recordInfo.files.push({ itemId: item.item_id, name: fileName });
   }
 
-  await db.pool.query(
+  await pool.query(
     `
 	INSERT INTO record_last_access
 	(record_id, user_id, access_time)
@@ -184,7 +184,7 @@ const updateRecord = async (req, res) => {
   const recordId = req.params.recordId;
   const status = req.body.status;
 
-  await db.pool.query(`update record set status = ? where record_id = ?`, [
+  await pool.query(`update record set status = ? where record_id = ?`, [
     `${status}`,
     `${recordId}`,
   ]);

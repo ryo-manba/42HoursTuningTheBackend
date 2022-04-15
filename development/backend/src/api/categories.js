@@ -1,16 +1,16 @@
-const db = require("../mysql");
+const { getLinkedUser, mylog, pool } = require("../mysql");
 
 // GET categories/
 // カテゴリーの取得
 const getCategories = async (req, res) => {
-  let user = await db.getLinkedUser(req.headers);
+  let user = await getLinkedUser(req.headers);
 
   if (!user) {
     res.status(401).send();
     return;
   }
 
-  const [rows] = await db.pool.query(`select * from category`);
+  const [rows] = await pool.query(`select * from category`);
 
   for (const row of rows) {
     mylog(row);

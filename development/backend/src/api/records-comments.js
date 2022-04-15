@@ -1,9 +1,9 @@
-const db = require("../mysql");
+const { getLinkedUser, mylog, pool } = require("../mysql");
 
 // GET records/{recordId}/comments
 // コメントの取得
 const getComments = async (req, res) => {
-  let user = await db.getLinkedUser(req.headers);
+  let user = await getLinkedUser(req.headers);
 
   if (!user) {
     res.status(401).send();
@@ -14,7 +14,7 @@ const getComments = async (req, res) => {
 
   const commentQs = `select * from record_comment where linked_record_id = ? order by created_at desc`;
 
-  const [commentResult] = await db.pool.query(commentQs, [`${recordId}`]);
+  const [commentResult] = await pool.query(commentQs, [`${recordId}`]);
   mylog(commentResult);
 
   const commentList = Array(commentResult.length);
@@ -33,17 +33,17 @@ const getComments = async (req, res) => {
     };
     const line = commentResult[i];
 
-    const [primaryResult] = await db.pool.query(searchPrimaryGroupQs, [line.created_by]);
+    const [primaryResult] = await pool.query(searchPrimaryGroupQs, [line.created_by]);
     if (primaryResult.length === 1) {
       const primaryGroupId = primaryResult[0].group_id;
 
-      const [groupResult] = await db.pool.query(searchGroupQs, [primaryGroupId]);
+      const [groupResult] = await pool.query(searchGroupQs, [primaryGroupId]);
       if (groupResult.length === 1) {
         commentInfo.createdByPrimaryGroupName = groupResult[0].name;
       }
     }
 
-    const [userResult] = await db.pool.query(searchUserQs, [line.created_by]);
+    const [userResult] = await pool.query(searchUserQs, [line.created_by]);
     if (userResult.length === 1) {
       commentInfo.createdByName = userResult[0].name;
     }
@@ -76,7 +76,7 @@ const postComments = async (req, res) => {
   const recordId = req.params.recordId;
   const value = req.body.value;
 
-  await db.pool.query(
+  await pool.query(
     `
     insert into record_comment
     (linked_record_id, value, created_by, created_at)
@@ -84,7 +84,7 @@ const postComments = async (req, res) => {
     [`${recordId}`, `${value}`, user.user_id],
   );
 
-  await db.pool.query(
+  await pool.query(
     `
     update record set updated_at = now() where record_id = ?;`,
     [`${recordId}`],
