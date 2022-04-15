@@ -31,7 +31,7 @@ const postFiles = async (req, res) => {
 
   fs.writeFileSync(`${filePath}${newId}_${name}`, binary);
 
-  const image = await jimp.read(fs.readFileSync(`${filePath}${newId}_${name}`));
+  const image = await jimp.read(binary);
   mylog(image.bitmap.width);
   mylog(image.bitmap.height);
 
