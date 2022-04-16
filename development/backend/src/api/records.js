@@ -18,7 +18,7 @@ const postRecords = async (req, res) => {
   mylog(body);
 
   let [rows] = await pool.query(
-    `select * from group_member where user_id = ?
+    `select group_id from group_member where user_id = ?
     AND is_primary = true`,
     [user.user_id],
   );

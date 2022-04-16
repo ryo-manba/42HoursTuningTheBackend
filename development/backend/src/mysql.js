@@ -26,7 +26,7 @@ const mylog = (obj) => {
 const getLinkedUser = async (headers) => {
   const target = headers['x-app-key'];
   mylog(target);
-  const qs = `select * from session where value = ?`;
+  const qs = `select linked_user_id from session where value = ?`;
 
   const [rows] = await pool.query(qs, [`${target}`]);
 
