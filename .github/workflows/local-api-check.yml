@@ -3,6 +3,7 @@ name: Local Check (API Only)
 on:
   push:
   workflow_dispatch:
+  pull_request:
 
 jobs:
   build:
@@ -24,7 +25,6 @@ jobs:
         run: docker-compose -f docker-compose-local.yaml up -d
       
       - name: setup dependencies
-        working-directory: 
         run: (cd ./scoring/tool/nodeTool && npm ci)
 
       - name: Wait for MySQL will ready
