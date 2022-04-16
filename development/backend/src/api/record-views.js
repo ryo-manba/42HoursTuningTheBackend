@@ -39,25 +39,18 @@ const tomeActive = async (req, res) => {
   );
   mylog(targetCategoryAppGroupList);
 
-  let searchRecordQs =
-    'select * from record where status = "open" and (category_id, application_group) in (';
-  let recordCountQs =
-    'select count(*) from record where status = "open" and (category_id, application_group) in (';
+  const searchRecordQs =
+    `SELECT * FROM record
+    WHERE status = "open" AND (category_id, application_group) IN (${",(?,?)".repeat(targetCategoryAppGroupList.length).slice(1)})
+    ORDER BY updated_at DESC, record_id  LIMIT ? OFFSET ?`;
+  const recordCountQs = `select count(*) from record where status = "open" and (category_id, application_group) in (${",(?,?)".repeat(targetCategoryAppGroupList.length).slice(1)})`;
   const param = [];
 
-  for (let i = 0; i < targetCategoryAppGroupList.length; i++) {
-    if (i !== 0) {
-      searchRecordQs += ', (?, ?)';
-      recordCountQs += ', (?, ?)';
-    } else {
-      searchRecordQs += ' (?, ?)';
-      recordCountQs += ' (?, ?)';
-    }
-    param.push(targetCategoryAppGroupList[i].category_id);
-    param.push(targetCategoryAppGroupList[i].application_group);
-  }
-  searchRecordQs += ' ) order by updated_at desc, record_id  limit ? offset ?';
-  recordCountQs += ' )';
+  targetCategoryAppGroupList.forEach(v => {
+    param.push(v.category_id);
+    param.push(v.application_group);
+  });
+
   param.push(limit);
   param.push(offset);
   mylog(searchRecordQs);
