@@ -1,5 +1,3 @@
-set @@default_storage_engine = 'MyISAM';
--- set @@default_storage_engine = 'MEMORY';
 CREATE TABLE `user` (
     `user_id` bigint NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(32) NOT NULL,
