@@ -24,7 +24,6 @@ jobs:
         run: docker-compose -f docker-compose-local.yaml up -d
       
       - name: setup dependencies
-        working-directory: 
         run: (cd ./scoring/tool/nodeTool && npm ci)
 
       - name: Wait for MySQL will ready
