@@ -7,7 +7,7 @@ ALTER TABLE record             ADD INDEX record_status(status),
                                ADD INDEX record_record_id(record_id),
                                ADD INDEX record_created_by(created_by),
                                ADD INDEX recored_created_at(created_at),
-                               ADD INDEX recored_updated_at(updated_at)
+                               ADD INDEX recored_updated_at(updated_at);
 ALTER TABLE record_item_file   ADD INDEX record_item_file_linked_record_id(linked_record_id),
                                ADD INDEX record_item_file_item_id(item_id);
 ALTER TABLE record_last_access ADD INDEX record_last_access(user_id);
