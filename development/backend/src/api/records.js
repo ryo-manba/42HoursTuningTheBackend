@@ -49,14 +49,18 @@ const postRecords = async (req, res) => {
     ],
   );
 
-  for (const e of body.fileIdList) {
-    await pool.query(
-      `insert into record_item_file
-        (linked_record_id, linked_file_id, linked_thumbnail_file_id, created_at)
-        values (?, ?, ?, now())`,
-      [`${newId}`, `${e.fileId}`, `${e.thumbFileId}`],
-    );
-  }
+  const params = [];
+  body.fileIdList.forEach(e => {
+    params.push(`${newId}`);
+    params.push(`${e.fileId}`);
+    params.push(`${e.thumbFileId}`);
+  });
+  await pool.query(
+    `insert into record_item_file
+      (linked_record_id, linked_file_id, linked_thumbnail_file_id, created_at)
+      values ${",(?, ?, ?, now())".repeat(body.fileIdList.length).slice(1)}`,
+    params,
+  );
 
   res.send({ recordId: newId });
 };
