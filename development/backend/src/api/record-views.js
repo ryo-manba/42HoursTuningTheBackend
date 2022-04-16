@@ -1,19 +1,13 @@
 const { getLinkedUser, mylog, pool } = require("../mysql");
 
-const getMyCategoryAndAppGroup = (myGroupIdArr) => {
-  if (myGroupIdArr.length <= 0)
+const getValuesWhichHasValuesIn = (targetColumn, tableName, valuesIn, values) => {
+  if (values.length <= 0)
     return [];
 
   return pool.query(
-    `select category_id, application_group from category_group where group_id in (${",?".repeat(myGroupIdArr.length).slice(1)})`,
-    [...myGroupIdArr]
-  ).then(arr =>
-    arr[0].map(v => ({
-        categoryId: v.category_id,
-        applicationGroup: v.application_group,
-      })
-    )
-  );
+    `select ${targetColumn} from ${tableName} where ${valuesIn} in (${",?".repeat(values.length).slice(1)})`,
+    values
+  ).then(arr => arr[0]);
 };
 
 // GET /record-views/tomeActive
@@ -37,7 +31,12 @@ const tomeActive = async (req, res) => {
   const [myGroupResult] = await pool.query("select group_id from group_member where user_id = ?", [user.user_id]);
   mylog(myGroupResult);
 
-  const targetCategoryAppGroupList = await getMyCategoryAndAppGroup(myGroupResult.map(v => v.group_id));
+  const targetCategoryAppGroupList = await getValuesWhichHasValuesIn(
+    "category_id, application_group",
+    "category_group",
+    "group_id",
+    myGroupResult.map(v => v.group_id),
+  );
   mylog(targetCategoryAppGroupList);
 
   let searchRecordQs =
@@ -54,8 +53,8 @@ const tomeActive = async (req, res) => {
       searchRecordQs += ' (?, ?)';
       recordCountQs += ' (?, ?)';
     }
-    param.push(targetCategoryAppGroupList[i].categoryId);
-    param.push(targetCategoryAppGroupList[i].applicationGroup);
+    param.push(targetCategoryAppGroupList[i].category_id);
+    param.push(targetCategoryAppGroupList[i].application_group);
   }
   searchRecordQs += ' ) order by updated_at desc, record_id  limit ? offset ?';
   recordCountQs += ' )';
