@@ -18,8 +18,7 @@ const tomeActive = async (req, res) => {
     limit = 10;
   }
 
-  const searchMyGroupQs = `select * from group_member where user_id = ?`;
-  const [myGroupResult] = await pool.query(searchMyGroupQs, [user.user_id]);
+  const [myGroupResult] = await pool.query("select group_id from group_member where user_id = ?", [user.user_id]);
   mylog(myGroupResult);
 
   const targetCategoryAppGroupList = [];
