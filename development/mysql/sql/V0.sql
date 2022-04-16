@@ -1,3 +1,5 @@
+set @@default_storage_engine = 'MyISAM';
+-- set @@default_storage_engine = 'MEMORY';
 CREATE TABLE `user` (
     `user_id` bigint NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(32) NOT NULL,
@@ -29,7 +31,7 @@ CREATE TABLE `record` (
     `created_by` bigint NOT NULL,
     `created_at` TIMESTAMP NOT NULL,
     `updated_at` TIMESTAMP NOT NULL,
-    PRIMARY KEY (`record_id`)
+    PRIMARY KEY (`record_id`) -- VARCHARをKEYにすると遅いかも？
 );
 
 CREATE TABLE `record_item_file` (
