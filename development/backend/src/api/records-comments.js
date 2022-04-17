@@ -12,16 +12,13 @@ const getComments = async (req, res) => {
 
   const recordId = req.params.recordId;
 
-  const commentQs = `select * from record_comment where linked_record_id = ? order by created_at desc`;
+  const commentQs = `SELECT * FROM record_comment WHERE linked_record_id = ? ORDER BY created_at DESC`;
 
   const [commentResult] = await pool.query(commentQs, [`${recordId}`]);
   mylog(commentResult);
 
   const commentList = Array(commentResult.length);
 
-  const searchPrimaryGroupQs = `select * from group_member where user_id = ? and is_primary = true`;
-  const searchUserQs = `select * from user where user_id = ?`;
-  const searchGroupQs = `select * from group_info where group_id = ?`;
   for (let i = 0; i < commentResult.length; i++) {
     let commentInfo = {
       commentId: '',
@@ -33,17 +30,17 @@ const getComments = async (req, res) => {
     };
     const line = commentResult[i];
 
-    const [primaryResult] = await pool.query(searchPrimaryGroupQs, [line.created_by]);
+    const [primaryResult] = await pool.query('SELECT group_id FROM group_member WHERE user_id = ? AND is_primary = true', [line.created_by]);
     if (primaryResult.length === 1) {
       const primaryGroupId = primaryResult[0].group_id;
 
-      const [groupResult] = await pool.query(searchGroupQs, [primaryGroupId]);
+      const [groupResult] = await pool.query('SELECT name FROM group_info WHERE group_id = ?', [primaryGroupId]);
       if (groupResult.length === 1) {
         commentInfo.createdByPrimaryGroupName = groupResult[0].name;
       }
     }
 
-    const [userResult] = await pool.query(searchUserQs, [line.created_by]);
+    const [userResult] = await pool.query('SELECT name FROM user WHERE user_id = ?', [line.created_by]);
     if (userResult.length === 1) {
       commentInfo.createdByName = userResult[0].name;
     }
@@ -77,16 +74,12 @@ const postComments = async (req, res) => {
   const value = req.body.value;
 
   await pool.query(
-    `
-    insert into record_comment
-    (linked_record_id, value, created_by, created_at)
-    values (?,?,?, now());`,
+    'INSERT INTO record_comment (linked_record_id, value, created_by, created_at) VALUES (?,?,?, now());',
     [`${recordId}`, `${value}`, user.user_id],
   );
 
   await pool.query(
-    `
-    update record set updated_at = now() where record_id = ?;`,
+    'UPDATE record SET updated_at = now() WHERE record_id = ?;',
     [`${recordId}`],
   );
 
