@@ -29,7 +29,9 @@ CREATE TABLE `record` (
     `created_by` bigint NOT NULL,
     `created_at` TIMESTAMP NOT NULL,
     `updated_at` TIMESTAMP NOT NULL,
-    PRIMARY KEY (`record_id`)
+    PRIMARY KEY (`record_id`),
+    INDEX idx1 (updated_at DESC),
+    INDEX idx2 (updated_at DESC, record_id ASC)
 );
 
 CREATE TABLE `record_item_file` (
@@ -38,7 +40,8 @@ CREATE TABLE `record_item_file` (
     `linked_file_id` VARCHAR(64) NOT NULL,
     `linked_thumbnail_file_id` VARCHAR(64) NOT NULL,
     `created_at` TIMESTAMP NOT NULL,
-    PRIMARY KEY (`item_id`)
+    PRIMARY KEY (`item_id`),
+    INDEX idx1 (item_id ASC)
 );
 
 CREATE TABLE `record_last_access` (
@@ -54,7 +57,8 @@ CREATE TABLE `record_comment` (
     `value` VARCHAR(512) NOT NULL,
     `created_by` bigint NOT NULL,
     `created_at` TIMESTAMP NOT NULL,
-    PRIMARY KEY (`comment_id`)
+    PRIMARY KEY (`comment_id`),
+    INDEX idx1 (created_at DESC)
 );
 
 CREATE TABLE `category` (
