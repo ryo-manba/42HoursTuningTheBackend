@@ -35,7 +35,7 @@ const postRecords = async (req, res) => {
 
   const newId = uuidv4();
 
-  await pool.query(
+  const record_insert = pool.query(
     `insert into record
     (record_id, status, title, detail, category_id, application_group, created_by, created_at, updated_at)
     values (?, "open", ?, ?, ?, ?, ?, now(), now())`,
@@ -55,14 +55,17 @@ const postRecords = async (req, res) => {
     params.push(`${e.fileId}`);
     params.push(`${e.thumbFileId}`);
   });
-  await pool.query(
+  const file_insert = pool.query(
     `insert into record_item_file
       (linked_record_id, linked_file_id, linked_thumbnail_file_id, created_at)
       values ${",(?, ?, ?, now())".repeat(body.fileIdList.length).slice(1)}`,
     params,
   );
 
-  res.send({ recordId: newId });
+  return Promise.all([
+    record_insert,
+    file_insert,
+  ]).then(() => res.send({ recordId: newId }));
 };
 
 // GET /records/{recordId}
