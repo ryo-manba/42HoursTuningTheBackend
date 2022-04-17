@@ -43,13 +43,13 @@ const postFiles = async (req, res) => {
   await img_webp.resize(size, size).toFile(tmpThumbFilePath);
 
   await pool.query(
-    `insert into file (file_id, path, name)
-        values (?, ?, ?)`,
+    `INSERT INTO file (file_id, path, name)
+        VALUES (?, ?, ?)`,
     [`${newId}`, tmpFilePath, `${name}`],
   );
   await pool.query(
-    `insert into file (file_id, path, name)
-        values (?, ?, ?)`,
+    `INSERT INTO file (file_id, path, name)
+        VALUES (?, ?, ?)`,
     [`${newThumbId}`, tmpThumbFilePath, `thumb_${name}`],
   );
 

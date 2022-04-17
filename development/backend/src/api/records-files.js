@@ -18,14 +18,7 @@ const getRecordItemFile = async (req, res) => {
   mylog(itemId);
 
   const [rows] = await pool.query(
-    `select f.name, f.path from record_item_file r
-    inner join file f
-    on
-    r.linked_record_id = ?
-    and
-    r.item_id = ?
-    and
-    r.linked_file_id = f.file_id`,
+    'SELECT f.name, f.path FROM record_item_file AS r INNER JOIN file AS f  ON r.linked_record_id = ? AND r.item_id = ? AND r.linked_file_id = f.file_id',
     [`${recordId}`, `${itemId}`],
   );
 
@@ -60,14 +53,7 @@ const getRecordItemFileThumbnail = async (req, res) => {
   mylog(itemId);
 
   const [rows] = await pool.query(
-    `select f.name, f.path from record_item_file r
-    inner join file f
-    on
-    r.linked_record_id = ?
-    and
-    r.item_id = ?
-    and
-    r.linked_thumbnail_file_id = f.file_id`,
+    'SELECT f.name, f.path FROM record_item_file AS r INNER JOIN file AS f ON r.linked_record_id = ? AND r.item_id = ? AND r.linked_thumbnail_file_id = f.file_id',
     [`${recordId}`, `${itemId}`],
   );
 

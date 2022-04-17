@@ -20,4 +20,10 @@ if [ $?=0 ] ; then
   bash localApiTestOnly.sh
 fi
 
+if [ $?!=0 ] ; then
+  echo "=========== nodejs errors ==========="
+  backend_container_name=`docker ps --format "{{.Names}}" --filter "name=backend"`
+  docker logs $backend_container_name > /dev/null
+fi
+
 docker-compose -f docker-compose-local.yaml down

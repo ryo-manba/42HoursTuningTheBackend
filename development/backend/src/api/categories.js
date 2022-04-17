@@ -10,7 +10,7 @@ const getCategories = async (req, res) => {
     return;
   }
 
-  const [rows] = await pool.query(`select * from category`);
+  const [rows] = await pool.query(`SELECT name, category_id FROM category`);
 
   for (const row of rows) {
     mylog(row);
