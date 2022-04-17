@@ -41,13 +41,13 @@ const postFiles = async (req, res) => {
   await image.writeAsync(`${filePath}${newThumbId}_thumb_${name}`);
 
   await pool.query(
-    `insert into file (file_id, path, name)
-        values (?, ?, ?)`,
+    `INSERT INTO file (file_id, path, name)
+        VALUES (?, ?, ?)`,
     [`${newId}`, `${filePath}${newId}_${name}`, `${name}`],
   );
   await pool.query(
-    `insert into file (file_id, path, name)
-        values (?, ?, ?)`,
+    `INSERT INTO file (file_id, path, name)
+        VALUES (?, ?, ?)`,
     [`${newThumbId}`, `${filePath}${newThumbId}_thumb_${name}`, `thumb_${name}`],
   );
 
